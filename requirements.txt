@@ -8,3 +8,5 @@ MySQL-python
 SQLAlchemy
 M2Crypto
 pyasn1
+python-magic
+duplicity

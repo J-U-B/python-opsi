@@ -459,7 +459,7 @@ class ProductPackageFile(object):
 
 class ProductPackageSource(object):
 
-	def __init__(self, packageSourceDir, tempDir=None, customName=None, customOnly=False, packageFileDestDir=None, format='cpio', compression='gzip', dereference=False):
+	def __init__(self, packageSourceDir, tempDir=None, customName=None, customOnly=False, packageFileDestDir=None, format='cpio', compression='gzip', dereference=False, packagePrefix=None, packageName=None):
 		self.packageSourceDir = os.path.abspath(forceFilename(packageSourceDir))
 		if not os.path.isdir(self.packageSourceDir):
 			raise Exception(u"Package source directory '%s' not found" % self.packageSourceDir)
@@ -475,6 +475,14 @@ class ProductPackageSource(object):
 			self.customName = forcePackageCustomName(customName)
 
 		self.customOnly = forceBool(customOnly)
+
+		self.packagePrefix=u''
+		if packagePrefix:
+			self.packagePrefix = forceUnicode(packagePrefix) + u'_'
+
+		self.packageName=None
+		if packageName:
+			self.packageName = forceFilename(packageName)
 
 		if format:
 			if format not in (u'cpio', u'tar'):
@@ -507,11 +515,19 @@ class ProductPackageSource(object):
 		customName = u''
 		if self.customName:
 			customName = u'~%s' % self.customName
-		self.packageFile = os.path.join(packageFileDestDir, u"%s_%s-%s%s.opsi" % (
-				self.packageControlFile.getProduct().id,
+		if self.packageName:
+			self.packageFile = os.path.join(packageFileDestDir, u"%s_%s-%s%s.opsi" % (
+				self.packageName,
 				self.packageControlFile.getProduct().productVersion,
 				self.packageControlFile.getProduct().packageVersion,
 				customName))
+		else:
+			self.packageFile = os.path.join(packageFileDestDir, u"%s%s_%s-%s%s.opsi" % (
+					self.packagePrefix,
+					self.packageControlFile.getProduct().id,
+					self.packageControlFile.getProduct().productVersion,
+					self.packageControlFile.getProduct().packageVersion,
+					customName))
 
 		self.tmpPackDir = os.path.join(self.tempDir, u'.opsi.pack.%s' % randomString(5))
 
