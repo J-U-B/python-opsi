@@ -535,7 +535,7 @@ class ProductPackageSource(object):
 			diskusage = 0
 			dirs = [u'CLIENT_DATA', u'SERVER_DATA', u'OPSI']
 
-			if self.customName:
+			if self.customName and not self.customOnly:
 				found = False
 				for i, currentDir in enumerate(dirs):
 					customDir = u"%s.%s" % (currentDir, self.customName)
